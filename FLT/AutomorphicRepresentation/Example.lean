@@ -377,7 +377,33 @@ noncomputable abbrev unitszHatsub : Subgroup QHatˣ :=
 noncomputable abbrev unitszsub : Subgroup QHatˣ :=
   (Units.map (Int.castRingHom QHat : ℤ →* QHat)).range
 
-lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := sorry
+lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := by
+  apply le_antisymm
+  · intro x ⟨⟨q, hxq⟩, ⟨z, hxzhat⟩⟩
+    #check rat_meet_zHat
+    #check ne_eq
+    #check map_intCast
+    sorry
+  · intro x ⟨xz, hxz⟩
+    constructor
+    · simp; use (Units.map ↑(Int.castRingHom ℚ)) xz
+      norm_cast
+    · simp; use (Units.map ↑(Int.castRingHom ZHat)) xz
+      rw [← hxz, ← MonoidHom.comp_apply, ← Units.map_comp]
+      congr
+      ext x
+      have : (-1 : ZHat) = (-1 : ℤ) * (1 : ZHat) := by simp
+      simp; rw [this, ← zsmul_eq_mul, TensorProduct.tmul_smul, zsmul_eq_mul]
+      norm_num; nth_rw 2 [← mul_one (-1 : QHat)]
+      have : (1 : QHat) = (1 : ℚ) ⊗ₜ[ℤ] (1 : ZHat) := by rfl
+      nth_rw 3 [this]
+      simp
+
+#check zsmul_eq_smul
+#check mul_one (-1 : ZHat)
+#check Units.map_comp
+#check MonoidHom.comp
+#check MonoidHom.comp_apply
 
 -- this needs that ℤ is a PID.
 lemma unitsrat_join_unitszHat : unitsratsub ⊔ unitszHatsub = ⊤ := sorry
