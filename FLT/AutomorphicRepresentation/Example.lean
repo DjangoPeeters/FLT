@@ -413,7 +413,7 @@ lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := by
       sorry
     --rw [← hxzHat] at hxzunit
     --simp only [AddMonoidHom.coe_coe, eq_intCast, Units.coe_map, MonoidHom.coe_coe,
-    --  Algebra.TensorProduct.includeRight_apply] at hxzunit
+    --  Algebra.TensorProduct.includeRight_apply] at hxzunit↥
     have h' : IsUnit xz := by
       sorry
     simp only [AddMonoidHom.coe_coe, eq_intCast] at hxz
