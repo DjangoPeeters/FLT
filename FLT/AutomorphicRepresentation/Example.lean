@@ -390,7 +390,49 @@ noncomputable abbrev unitszHatsub : Subgroup QHatˣ :=
 noncomputable abbrev unitszsub : Subgroup QHatˣ :=
   (Units.map (Int.castRingHom QHat : ℤ →* QHat)).range
 
-lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := sorry
+lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := by
+  apply le_antisymm
+  · intro x ⟨⟨q, hxq⟩, ⟨z, hxzHat⟩⟩
+    have h : Units.val x ∈ zsub := by
+      rw [← rat_meet_zHat]
+      constructor
+      · use Units.val q
+        rw [← hxq]
+        field_simp
+      · use Units.val z
+        rw [← hxzHat]
+        simp
+    rcases h with ⟨xz, hxz⟩
+    have xznez : xz ≠ 0 := by
+      intro h
+      simp only [AddMonoidHom.coe_coe, eq_intCast, Int.cast_zero] at hxz
+      rw [h, Int.cast_zero, Eq.comm] at hxz
+      contrapose! hxz
+      simp
+    have hxzunit : (xz : QHat) = i₂ (Units.val z) := by
+      simp only [hxzHat, Algebra.TensorProduct.includeRight_apply]
+      sorry
+    --rw [← hxzHat] at hxzunit
+    --simp only [AddMonoidHom.coe_coe, eq_intCast, Units.coe_map, MonoidHom.coe_coe,
+    --  Algebra.TensorProduct.includeRight_apply] at hxzunit↥
+    have h' : IsUnit xz := by
+      sorry
+    simp only [AddMonoidHom.coe_coe, eq_intCast] at hxz
+    #check ne_eq
+    #check map_intCast
+    simp only [MonoidHom.mem_range]
+    sorry
+  · intro x ⟨xz, hxz⟩
+    constructor
+    · use (Units.map ↑(Int.castRingHom ℚ)) xz
+      norm_cast
+    · use (Units.map ↑(Int.castRingHom ZHat)) xz
+      rw [← hxz, ← MonoidHom.comp_apply, ← Units.map_comp]
+      congr
+      ext x
+      · simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, Int.coe_castRingHom,
+        Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.one_tmul_intCast]
+      simp
 
 -- this needs that ℤ is a PID.
 lemma unitsrat_join_unitszHat : unitsratsub ⊔ unitszHatsub = ⊤ := sorry
