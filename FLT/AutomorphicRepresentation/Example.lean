@@ -397,30 +397,36 @@ lemma unitsrat_meet_unitszHat : unitsratsub ⊓ unitszHatsub = unitszsub := by
       rw [← rat_meet_zHat]
       constructor
       · use Units.val q
-        rw [← hxq]
-        field_simp
+        field_simp [← hxq]
       · use Units.val z
-        rw [← hxzHat]
-        simp
+        simp [← hxzHat]
     rcases h with ⟨xz, hxz⟩
     have xznez : xz ≠ 0 := by
       intro h
-      simp only [AddMonoidHom.coe_coe, eq_intCast, Int.cast_zero] at hxz
-      rw [h, Int.cast_zero, Eq.comm] at hxz
-      contrapose! hxz
-      simp
-    have hxzunit : (xz : QHat) = i₂ (Units.val z) := by
-      simp only [hxzHat, Algebra.TensorProduct.includeRight_apply]
-      sorry
-    --rw [← hxzHat] at hxzunit
-    --simp only [AddMonoidHom.coe_coe, eq_intCast, Units.coe_map, MonoidHom.coe_coe,
-    --  Algebra.TensorProduct.includeRight_apply] at hxzunit↥
-    have h' : IsUnit xz := by
+      simp [h, Eq.comm] at hxz
+    have hxzunitzHat : (xz : ZHat) = z := by
+      rw [AddMonoidHom.coe_coe, eq_intCast, ← Algebra.TensorProduct.one_tmul_intCast, ← hxzHat,
+        Units.coe_map, MonoidHom.coe_coe, Algebra.TensorProduct.includeRight_apply, ← div_one 1] at hxz
+      have cop (r : ZHat) : IsCoprime 1 r := by
+        simp only [IsCoprime, PNat.val_ofNat]
+        exact isUnit_of_subsingleton _
+      have canon := (lowestTerms ((1 / 1) ⊗ₜ[ℤ] ↑xz)).2 1 1 ↑xz ↑z ⟨cop _, cop _, hxz⟩
+      exact canon.2
+    have : IsUnit (xz : ZHat) := by simp [hxzunitzHat, Units.isUnit]
+    have : Invertible (xz : ZHat) := IsUnit.invertible this
+    let xzunit : ZHatˣ := unitOfInvertible (xz : ZHat)
+    have h' : Units.val xzunit = (xz : ZHat) := by simp [xzunit]
+    let xzinv := Units.val (1 / xzunit)
+    let xzinv' : QHat := i₂ xzinv
+    have move : (1 / xz : ℚ) ⊗ₜ[ℤ] 1 = 1 ⊗ₜ[ℤ] xzinv := by
+      simp only [xzinv, xzunit, val_inv_unitOfInvertible]
+      #check div_self
+      --rw [div_self xznez, ← mul_one ((l.num : ℚ) / l.den), div_mul_comm,
+      --mul_comm, ← zsmul_eq_mul, TensorProduct.smul_tmul, zsmul_eq_mul, mul_one]
       sorry
     simp only [AddMonoidHom.coe_coe, eq_intCast] at hxz
-    #check ne_eq
-    #check map_intCast
     simp only [MonoidHom.mem_range]
+    #check Int.isUnit_iff_abs_eq
     sorry
   · intro x ⟨xz, hxz⟩
     constructor
